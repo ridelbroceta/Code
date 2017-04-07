@@ -1,0 +1,5 @@
+ //paging:   false,
+            lengthChange: false,
+            ordering: false,
+            info: false,
+            searching: false,
