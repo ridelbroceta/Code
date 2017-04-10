@@ -1,0 +1,52 @@
+http://stackoverflow.com/questions/16016761/mvc-4-modal-window-partial-view-and-validation
+
+
+
+function OpenDialog(DialogContainerID)
+{
+     var $DialogContainer = $('#' + DialogContainerID);
+     var $jQval = $.validator; //This is the validator
+     $jQval.unobtrusive.parse($DialogContainer); // and here is where you set it up.
+     $DialogContainer.modal();
+
+     var $form = $DialogContainer.find("form");
+     $.validator.unobtrusive.parse($form);
+
+     $form.on("submit", function (event)
+     {
+             var $form = $(this);
+
+             //Function is defined later...
+             submitAsyncForm($form,
+             function (data)
+             {
+                     $DialogContainer.modal("hide");
+                     window.location.href = window.location.href;
+
+             },
+             function (xhr, ajaxOptions, thrownError)
+             {
+                     console.log(xhr.responseText);
+                     $("body").html(xhr.responseText);
+             });
+             event.preventDefault();
+     });
+}
+
+//This is the function that will submit the form using ajax and check for validation errors before that.
+function submitAsyncForm($formToSubmit, fnSuccess, fnError)
+{
+        if (!$formToSubmit.valid())
+                return false;
+
+        $.ajax({
+                type: $formToSubmit.attr('method'),
+                url: $formToSubmit.attr('action'),
+                data: $formToSubmit.serialize(),
+
+                success: fnSuccess,
+                error: fnError
+
+        });
+
+}
