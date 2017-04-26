@@ -1,0 +1,23 @@
+ public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Request request = db.Requests.Find(id);
+            if (request == null)
+            {
+                return HttpNotFound();
+            }
+            return View(request);
+        }
+        
+         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Request request = db.Requests.Find(id);
+            db.Requests.Remove(request);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
