@@ -1,0 +1,8 @@
+ <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/themes/base/autocomplete.css" rel="stylesheet" type="text/css" />
+
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.12.1.min.js")"></script>
