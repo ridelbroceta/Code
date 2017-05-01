@@ -1,0 +1,158 @@
+
+   public JsonResult StateByTerm(string term)
+        {
+            var states =
+                db.States.Where(p => p.Name.ToLower().Contains(term.ToLower()))
+                    .Include(w => w.Country)
+                    .Select(p => new {p.StateId, StateName = p.Name, p.CountryId, CountryName = p.Country.Name });
+            return Json(states, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult StateById(int? id)
+        {
+            if (id == null)
+                return Json(new { Success = false }, JsonRequestBehavior.AllowGet);
+            var state = db.States.Where(p => p.StateId == id).SingleOrDefault();
+            return Json(state != null ? (object) new {Success = true, state.StateId, state.Name} : new { Success = false }, JsonRequestBehavior.AllowGet);
+        }
+
+
+<style>
+ .ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+  /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+  * html .ui-autocomplete {
+    height: 200px;
+  }
+      
+  .ui-autocomplete { z-index:2147483647; }
+</style>
+<h2>_MyViewPartial</h2>
+
+@Html.Hidden("StateId")
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="ui-widget">
+                <label for="txtState">State: </label>
+                <input id="txtState">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <label for="countryName">Country</label>
+                <label id="countryName"></label>
+            </div>
+
+        </div>
+    </div>
+
+
+    <button  id="btnClean" class="btn btn-primary">Clean</button>
+    <div class="ui-widget" style="margin-top:2em; font-family:Arial">
+        Result:
+        <div id="log" style="height: 200px; width: 300px; overflow: auto;" class="ui-widget-content"></div>
+    </div>
+
+</div>
+
+<script>
+    
+    $(document).ready(function () {
+
+        function log(message) {
+            $("<div>").text(message).prependTo("#log");
+            $("#log").scrollTop(0);
+        }
+
+        function cleanAllAboutAutocomplete() {
+            $("#txtState").val('');
+            cleanAssociateAutocomplete();
+        }
+
+        function cleanAssociateAutocomplete() {
+            $('#countryName').text('');
+            $('#StateId').val('');
+        }
+
+        $('#btnClean').click(function() {
+            $('#log').html('');
+        });
+
+        var cache = {};
+
+        $("#txtState").autocomplete({
+            source: function (request, response) {
+                var term = request.term;
+                if (term in cache) {
+                    response(cache[term]);
+                    return;
+                }
+                $.ajax({
+                    url: '@Url.Action("StateByTerm", "StateViews")',
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        var $map =  $.map(data, function (item) {
+                            return {
+                                label: item.StateName,
+                                value: item.StateName,
+                                id: item.StateId,
+                                countryId: item.CountryId,
+                                countryName : item.CountryName,
+                            };
+                        });
+                        cache[term] = $map;
+                        response($map);
+                    }
+                });
+            },
+            minLength: 2,
+            delay: 500,
+            select: function (event, ui) {
+                $('#StateId').val(ui.item.id);
+                $('#countryName').text(ui.item.countryName);
+            },
+            change: function (event, ui) {
+                log("change");
+                if (!ui.item) {
+                    cleanAssociateAutocomplete();
+                    log("change into");
+                }
+            }
+        });
+
+        $("#txtState").focusout(function () {
+            if (!$(this).val().length) {
+                log("focus out epmty");
+                cleanAssociateAutocomplete();
+            } else {
+                log("focus out no epmty");
+                $.ajax({
+                    url: '@Url.Action("StateById", "StateViews")',
+                    dataType: "json",
+                    data: { id: $('#StateId').val() },
+                    success: function (data) {
+                        if (data.Success) {
+                            if (data.Name.toLowerCase() != $("#txtState").val().toLowerCase()) 
+                                cleanAllAboutAutocomplete();
+                        } else {
+                            cleanAllAboutAutocomplete();
+                        }
+                    },
+                    error: function (xhr, status) {
+                        cleanAllAboutAutocomplete();
+                    }
+                });
+            }
+        });
+    });
+</script>
