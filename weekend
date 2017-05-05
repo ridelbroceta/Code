@@ -1,0 +1,179 @@
+ <script type="text/javascript">
+        var webRoot = '@Url.Content("~")';
+        var _ssrsRoot = '@ConfigurationManager.AppSettings["ReportServer"]';
+        var secondBeforeExpiring = 10;
+        var message = "Your session has timed out. \n You will be redirect to Login Page in <b><span id='timeRemaining'>" + secondBeforeExpiring + "</span></b> seconds.";
+        var countdown;
+        var intervalIsRunning = false;
+
+        //This is better flavor of time out
+        var sessionTimeout = @Session.Timeout;
+
+        //For Session Expire Warning Popup
+        var sessionWarningTimer = setTimeout('startTimer()', (parseInt(sessionTimeout) * 60 * 1000)-(parseInt(secondBeforeExpiring) * 1000));
+
+        $(document).ajaxStart(function () {
+            resetTimeOut();
+        });
+
+        function startTimer() {
+            duration = secondBeforeExpiring;
+
+            var dialog = new BootstrapDialog({
+                title: 'Application Timeout',
+                type: BootstrapDialog.TYPE_DANGER,
+                message: message,
+                closable: false,
+                buttons: [{
+                    id: 'btn-ok',
+                    icon: 'glyphicon glyphicon-remove',
+                    label: 'Cancel',
+                    cssClass: 'btn btn-danger',
+                    autospin: false,
+                    action: function (dialogRef) {
+                        $.ajax({
+                            url: '@Url.Action("SessionAlive", "Home")',
+                            cache: false,
+                            //complete: function () {
+                            //    debugger;
+                            //    resetTimeOut();
+                            //}
+                            error: function(e){
+                                window.location.href = webRoot + "/Home/Login";
+                            }
+                        });
+
+                        dialogRef.close();
+                    }
+                }]
+            });
+            dialog.open();
+
+            countdown = setInterval(function () {
+                intervalIsRunning = true;
+                // If seconds remain
+                if (--duration) {
+                    $("#timeRemaining").text(duration);
+                } else {
+                    // Clear the countdown interval
+                    clearInterval(countdown);
+                    intervalIsRunning = false;
+                    window.location.href = webRoot + "/Home/Login";
+                }
+                // Run interval every 1000ms (1 second)
+            }, 1000);
+        }
+
+        function resetTimeOut(){
+            // Then clearn the timeout
+            clearTimeout(sessionWarningTimer);
+            sessionWarningTimer = setTimeout('startTimer()', (parseInt(sessionTimeout) * 60 * 1000)-(parseInt(secondBeforeExpiring) * 1000) - 1000);
+            if( intervalIsRunning ) { 
+                intervalIsRunning = false; 
+                clearInterval(countdown); 
+            }
+        }
+
+       
+        $(document).ready(function () {
+            getMenu('@SessionHandler.User.UserSeq');
+
+            @*$(document).ajaxError(function (e, xhr, settings) {
+                if (xhr.status == 401) {
+                    location = '@Url.Action( "Login", "Home" )';
+                }
+            });*@
+
+            //$(document).on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
+            //    e.preventDefault();
+            //    e.stopPropagation();
+            //})
+        })
+
+        function getMenu(userSeq) {
+            var ascsURL = '@(((ClientSettingsSection)ConfigurationManager.GetSection("applicationSettings/eFDO.Properties.Settings")).Settings.Get("ASCSConnectBaseUrl").Value.ValueXml.InnerText)'
+            var appCode = '@(((ClientSettingsSection)ConfigurationManager.GetSection("applicationSettings/eFDO.Properties.Settings")).Settings.Get("ASCSAppCode").Value.ValueXml.InnerText)'
+            var apiURL = ascsURL + "api/Public/GetMenuLiteral";
+
+            var formData = { selectedUserSeq: userSeq, selectedApp: appCode };
+
+            $.get(apiURL, formData, function (data) {
+                data = data.replace(/~\//g, webRoot); //Replace relative path for absolute path
+                setMenu(data);
+            }, "json");
+        }
+
+        function setMenu(data) {
+            $(".mymenu").replaceWith(data);
+            //alert(data);
+        }
+    </script>
+	
+	
+	
+	 <system.web>
+    <!--<compilation debug="true" targetFramework="4.5.2" /> -->
+    <httpRuntime targetFramework="4.5.2" maxRequestLength="1048576" maxQueryStringLength="32768" maxUrlLength="65536" />
+    <httpModules>
+      <add name="ApplicationInsightsWebTracking" type="Microsoft.ApplicationInsights.Web.ApplicationInsightsHttpModule, Microsoft.AI.Web" />
+    </httpModules>
+    <!-- Uncomment for QA/Production
+    <sessionState mode="InProc" cookieless="false" timeout="60" />
+    -->
+    <!-- StateServer is only for development -->
+    <!--<sessionState mode="StateServer" stateConnectionString="tcpip=127.0.0.1:42424" cookieless="false" timeout="60" />-->
+	
+	
+	
+	 protected void Application_AcquireRequestState(object sender, EventArgs e)
+        {
+            AuthenticationHelper.LoadAuthenticationData();
+        }
+		
+		
+		[HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var key = ISS.Cryptography.Symmetric.Decrypt(Properties.Settings.Default.PrivateKey);
+
+
+                var webRoot = Url.Content("~");
+                // Get the user's information via EnterpriseConnect & ASCS.
+                LoginService loginService = new LoginService();
+                var userInfo = loginService.GetUserInfo(model.AuthenticationToken);
+
+                if (userInfo == null)
+                    return RedirectToAction("Login", "Home");
+
+                // Get the user's menu via EnterpriseConnect & ASCS.
+                var userMenu = loginService.GetUserMenu(userInfo, webRoot);
+
+                // Create a User for the session.
+                SessionHandler.User = loginService.CreateUser(userInfo, userMenu);
+
+                SessionHandler.User.DepartmentName = repository.Get<DepartmentView>().Where(x => x.DeptId == SessionHandler.User.Level1Seq).Select(x => x.DeptName).FirstOrDefault();
+
+
+                //if (SessionHandler.User.RolePermissionList.Count == 0) { return RedirectToAction("Error","Home"); }
+
+                if (string.IsNullOrEmpty(SessionHandler.User.UserId))
+                {
+                    SessionHandler.User.UserId = model.UserId;
+                }
+                //((ClientSettingsSection)System.Configuration.ConfigurationManager.GetSection("applicationSettings/prr.Properties.Settings")).Settings.Get("ASCSAppCode").Value.ValueXml.InnerText
+
+                System.Web.HttpContext.Current.User = SessionHandler.User;
+                System.Threading.Thread.CurrentPrincipal = SessionHandler.User;
+                Request.RequestContext.HttpContext.Cache.Insert("currentPrincipal", SessionHandler.User);
+             
+
+                return RedirectToAction("Index", "Request");
+            }
+
+            return View(model);
+        }	
+		
