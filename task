@@ -1,0 +1,13 @@
+<style>
+    a.myTask.disabled {
+    pointer-events: none;
+    color: gray;
+}
+</style>
+
+
+
+   $('.myTask').addClass('disabled');
+   
+   
+          $('.myTask').removeClass('disabled');
