@@ -1,0 +1,396 @@
+@model WebApplication1.Areas.A_CodeTable.Models.ToSecurityViewModel
+
+
+@* @index CodeTable
+<script src="@Url.Content("~/Scripts/bootstrap-toggle.js")"></script> 
+    *@
+
+
+<link href="@Url.Content("~/Content/bootstrap-toggle.less")" rel="stylesheet" type="text/css"/>
+
+
+@Html.ValidationSummary(false, "", new { id = "myListErrors", @style = "display : none;" })
+
+
+@Html.HiddenFor(model => model.SecurityId)
+
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            @Html.LabelFor(m => m.Code, new { @class = "col-md-3 control-label required-field" })
+            <div class="col-md-3">
+                @Html.EditorFor(m => m.Code, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Code, string.Empty, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Description, new { @class = "col-md-3 control-label" })
+            <div class="col-md-7">
+                @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Description, string.Empty, new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6  text-danger" >
+        Legend
+        <ul>
+            <li>
+                RecDept: That the department is the source of the request.
+            </li>
+            <li>
+                OnTask: That the department has any task in the request.
+            </li>
+            <li>
+                Other: That the department does not be a source and does not have any task in the request.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--CR-->
+<div class="panel panel-default">
+    <div class="panel-heading">CR Section (The request is currently being created)</div>
+    <div class="panel-body" style="padding: 0;">
+        <table class="table table-bordered table-condensed" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        @Html.Label("External", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request is currently being created.</li>
+                                    <li>The user is external.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Dept_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request is currently being created.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Dept_Staff", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request is currently being created.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Sys_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request is currently being created.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.CR_External, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.CR_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.CR_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.CR_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!--AR-->
+<div class="panel panel-default">
+    <div class="panel-heading">AR Section (After a request has been sent)</div>
+    <div class="panel-body" style="padding: 0;">
+        <table class="table table-bordered table-condensed" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        @Html.Label("Any External", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user is external.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("RecDept Dept_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br> 
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("RecDept Dept_Staff", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("RecDept Sys_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Other Dept_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user does not belong to the department who is source of the request.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Other Dept_Staff", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user does not belong to the department who is source of the request.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        @Html.Label("Other Sys_Admin", htmlAttributes: new { @class = "control-label" })
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The request has been sent.</li>
+                                    <li>The user does not belong to the department who is source of the request.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_Any_External, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_RecDept_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_RecDept_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_RecDept_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_Other_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_Other_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AR_Other_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!--AP-->
+<div class="panel panel-default">
+    <div class="panel-heading">AP Section (After PRR# has been generated)</div>
+    <div class="panel-body" style="padding: 0;">
+        <table class="table table-bordered table-condensed" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th class="text-center">
+                        RecDept Dept_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        RecDept Dept_Staff
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        RecDept Sys_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who is source of the request.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        OnTask Dept_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who has tasks in the request.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        OnTask Dept_Staff
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who has tasks in the request.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        OnTask Sys_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to the department who has tasks in the request.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                            </i>
+                    </th>
+                    <th class="text-center">
+                        Other Dept_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to other departments who does not be source of the request and does not have any task in the request.</li>
+                                    <li>The user has dept_admin role.</li>
+                                 </ul></p>">
+                        </i> 
+                    </th>
+                    <th class="text-center">
+                        Other Dept_Staff
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to other departments who does not be source of the request and does not have any task in the request.</li>
+                                    <li>The user has dept_staff role.</li>
+                                 </ul></p>">
+                        </i>
+                    </th>
+                    <th class="text-center">
+                        Other Sys_Admin
+                        &nbsp;<i class="fa fa-info-circle my-popover" data-toggle="popover" data-placement="left"
+                                 data-content="<p>Is the user going to have permit (Yes/No)?</br>Conditions:</br>
+                                 <ul>
+                                    <li>The PRR# has been generated.</li>
+                                    <li>The user belongs to other departments who does not be source of the request and does not have any task in the request.</li>
+                                    <li>The user has sys_admin role.</li>
+                                 </ul></p>">
+                        </i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_RecDept_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_RecDept_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_RecDept_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_OnTask_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_OnTask_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_OnTask_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_Other_Dept_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_Other_Dept_Staff, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                    <td class="text-center">
+                        @Html.CheckBoxFor(m => m.AP_Other_Sys_Admin, htmlAttributes: new { data_onstyle = "success", data_offstyle = "warning", data_on = "Yes", data_off = "No" })
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+@Html.HiddenFor(model => model.UserIdEnt)
+@Html.HiddenFor(model => model.DateEnt)
+
+
+
+
+<script>
+    $(function () {
+        $('div#popUpEntityView').find('input[type=checkbox]').bootstrapToggle();
+        $('div#popUpEntityView').find('.my-popover').popover({ html: true });
+    })
+</script>
